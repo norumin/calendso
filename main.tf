@@ -47,8 +47,8 @@ module "data" {
   db_engine_version        = "13.6"
   db_allocated_storage     = 5
   db_max_allocated_storage = 18
-  db_username              = "calendso"
-  db_password              = "passw0rd"
+  db_username              = local.app_env.db_username
+  db_password              = local.app_env.db_password
   db_name                  = "calendso"
   db_publicly_accessible   = false
 }

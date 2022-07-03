@@ -37,5 +37,5 @@ variable "domain" {
 variable "alternative_domains" {
   description = "Alternative domains of this app"
   type        = list(string)
-  default     = [ ]
+  default     = []
 }
