@@ -3,8 +3,6 @@ name: Build docker image and push to ghcr.io
 on:
   push:
     branches:
-      - develop
-      - staging
       - production
     paths:
       - 'docker/**'
