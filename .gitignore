@@ -38,6 +38,7 @@ output.json
 outputs.json
 graph.gv
 graph.svg
+build_args.env
 
 # Private key files
 *.pem
