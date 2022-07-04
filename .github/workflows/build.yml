@@ -63,6 +63,9 @@ jobs:
           echo ::set-output name=DATABASE_URL::$(jq ".app_image_build_args.value.DATABASE_URL" -Mr output.json)
           echo ::set-output name=NEXTAUTH_SECRET::$(jq ".app_image_build_args.value.NEXTAUTH_SECRET" -Mr output.json)
           echo ::set-output name=CALENDSO_ENCRYPTION_KEY::$(jq ".app_image_build_args.value.CALENDSO_ENCRYPTION_KEY" -Mr output.json)
+      - name: Get version tag of webapp
+        id: webapp-version
+        run: echo ::set-output name=version::$(jq ".version" -Mr docker/calcom/apps/web/package.json)
       - name: Build and push docker image
         uses: docker/build-push-action@v3
         with:
@@ -79,5 +82,6 @@ jobs:
           tags: |
             ghcr.io/norumin/calendso:${{ env.SHA }}
             ghcr.io/norumin/calendso:${{ env.STAGE }}
+            ghcr.io/norumin/calendso:${{ steps.webapp-version.outputs.version }}
             ghcr.io/norumin/calendso:latest
           push: true
