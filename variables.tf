@@ -31,13 +31,13 @@ variable "apex_domain" {
 variable "domain" {
   description = "Domain of this app"
   type        = string
-  default     = "calendso.cednore.com"
+  default     = "calendso.norumin.com"
 }
 
 variable "alternative_domains" {
   description = "Alternative domains of this app"
   type        = list(string)
   default = [
-    "cal.cednore.com",
+    "cal.norumin.com",
   ]
 }
