@@ -41,7 +41,7 @@ variable "app_privkey_path" {
 }
 
 variable "app_image" {
-  description = "App docker image"
+  description = "App docker image name"
   type        = string
   default     = "calendso/calendso"
 }
