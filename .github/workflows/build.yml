@@ -5,6 +5,7 @@ on:
     branches:
       - production
     paths:
+      - '.github/workflows/build.yml'
       - 'docker/**'
   workflow_dispatch:
 
@@ -59,7 +60,8 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: docker/.
-          build-args: ${{ steps.output.outputs.build_args }}
+          build-args: |
+            ${{ steps.output.outputs.build_args }}
           tags: |
             ghcr.io/norumin/calendso:${{ env.SHA }}
             ghcr.io/norumin/calendso:${{ env.STAGE }}
