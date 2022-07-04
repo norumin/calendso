@@ -1,0 +1,115 @@
+---
+- name: Provision app instance
+  hosts: all
+  become: true
+  vars:
+    stage: production
+    image: calendso/calendso
+    tag: latest
+    container_count: 1
+    container_name_prefix: app
+    env: "{{ env | from_json }}"
+    ports: 80:3000
+    awslogs_region: us-east-2
+    awslogs_group:
+  tasks:
+    - name: Install aptitude
+      apt:
+        name: aptitude
+        state: latest
+        update_cache: true
+    - name: Install required system packages
+      apt:
+        pkg:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - python3-pip
+          - virtualenv
+          - python3-setuptools
+        state: latest
+        update_cache: true
+    - name: Add docker gpg apt key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+    - name: Add docker repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu focal stable
+        state: present
+    - name: Update apt and install docker-ce
+      apt:
+        name: docker-ce
+        state: latest
+        update_cache: true
+    - name: Install docker module for python
+      pip:
+        name: docker
+    - name: Pull docker image
+      community.docker.docker_image:
+        name: "{{ image }}:{{ tag }}"
+        source: pull
+    - name: Create containers
+      community.docker.docker_container:
+        name: "{{ container_name_prefix }}{{ item }}"
+        image: "{{ image }}:{{ tag }}"
+        ports: "{{ ports }}"
+        env:
+          NODE_ENV: "{{ env.NODE_ENV | string }}"
+          NEXT_PUBLIC_LICENSE_CONSENT: "{{ env.NEXT_PUBLIC_LICENSE_CONSENT | string }}"
+          DATABASE_URL: "{{ env.DATABASE_URL | string }}"
+          NEXT_PUBLIC_WEBAPP_URL: "{{ env.NEXT_PUBLIC_WEBAPP_URL | string }}"
+          NEXT_PUBLIC_WEBSITE_URL: "{{ env.NEXT_PUBLIC_WEBSITE_URL | string }}"
+          SAML_DATABASE_URL: "{{ env.SAML_DATABASE_URL | string }}"
+          SAML_ADMINS: "{{ env.SAML_ADMINS | string }}"
+          PGSSLMODE: "{{ env.PGSSLMODE | string }}"
+          NEXTAUTH_URL: "{{ env.NEXTAUTH_URL | string }}"
+          NEXTAUTH_SECRET: "{{ env.NEXTAUTH_SECRET | string }}"
+          NEXTAUTH_COOKIE_DOMAIN: "{{ env.NEXTAUTH_COOKIE_DOMAIN | string }}"
+          NEXT_PUBLIC_TELEMETRY_KEY: "{{ env.NEXT_PUBLIC_TELEMETRY_KEY | string }}"
+          CRON_API_KEY: "{{ env.CRON_API_KEY | string }}"
+          CALENDSO_ENCRYPTION_KEY: "{{ env.CALENDSO_ENCRYPTION_KEY | string }}"
+          NEXT_PUBLIC_INTERCOM_APP_ID: "{{ env.NEXT_PUBLIC_INTERCOM_APP_ID | string }}"
+          NEXT_PUBLIC_ZENDESK_KEY: "{{ env.NEXT_PUBLIC_ZENDESK_KEY | string }}"
+          NEXT_PUBLIC_HELPSCOUT_KEY: "{{ env.NEXT_PUBLIC_HELPSCOUT_KEY | string }}"
+          NEXT_PUBLIC_IS_E2E: "{{ env.NEXT_PUBLIC_IS_E2E | string }}"
+          NEXT_PUBLIC_STRIPE_PRO_PLAN_PRODUCT: "{{ env.NEXT_PUBLIC_STRIPE_PRO_PLAN_PRODUCT | string }}"
+          NEXT_PUBLIC_STRIPE_PRO_PLAN_PRICE: "{{ env.NEXT_PUBLIC_STRIPE_PRO_PLAN_PRICE | string }}"
+          NEXT_PUBLIC_STRIPE_PREMIUM_PLAN_PRICE: "{{ env.NEXT_PUBLIC_STRIPE_PREMIUM_PLAN_PRICE | string }}"
+          NEXT_PUBLIC_STRIPE_FREE_PLAN_PRICE: "{{ env.NEXT_PUBLIC_STRIPE_FREE_PLAN_PRICE | string }}"
+          API_KEY_PREFIX: "{{ env.API_KEY_PREFIX | string }}"
+          EMAIL_FROM: "{{ env.EMAIL_FROM | string }}"
+          EMAIL_SERVER_HOST: "{{ env.EMAIL_SERVER_HOST | string }}"
+          EMAIL_SERVER_PORT: "{{ env.EMAIL_SERVER_PORT | string }}"
+          EMAIL_SERVER_USER: "{{ env.EMAIL_SERVER_USER | string }}"
+          EMAIL_SERVER_PASSWORD: "{{ env.EMAIL_SERVER_PASSWORD | string }}"
+          DAILY_API_KEY: "{{ env.DAILY_API_KEY | string }}"
+          DAILY_SCALE_PLAN: "{{ env.DAILY_SCALE_PLAN | string }}"
+          GOOGLE_API_CREDENTIALS: "{{ env.GOOGLE_API_CREDENTIALS | string }}"
+          GOOGLE_LOGIN_ENABLED: "{{ env.GOOGLE_LOGIN_ENABLED | string }}"
+          HUBSPOT_CLIENT_ID: "{{ env.HUBSPOT_CLIENT_ID | string }}"
+          HUBSPOT_CLIENT_SECRET: "{{ env.HUBSPOT_CLIENT_SECRET | string }}"
+          MS_GRAPH_CLIENT_ID: "{{ env.MS_GRAPH_CLIENT_ID | string }}"
+          MS_GRAPH_CLIENT_SECRET: "{{ env.MS_GRAPH_CLIENT_SECRET | string }}"
+          SLACK_SIGNING_SECRET: "{{ env.SLACK_SIGNING_SECRET | string }}"
+          SLACK_CLIENT_ID: "{{ env.SLACK_CLIENT_ID | string }}"
+          SLACK_CLIENT_SECRET: "{{ env.SLACK_CLIENT_SECRET | string }}"
+          NEXT_PUBLIC_STRIPE_PUBLIC_KEY: "{{ env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY | string }}"
+          STRIPE_PRIVATE_KEY: "{{ env.STRIPE_PRIVATE_KEY | string }}"
+          STRIPE_WEBHOOK_SECRET: "{{ env.STRIPE_WEBHOOK_SECRET | string }}"
+          STRIPE_CLIENT_ID: "{{ env.STRIPE_CLIENT_ID | string }}"
+          PAYMENT_FEE_FIXED: "{{ env.PAYMENT_FEE_FIXED | string }}"
+          PAYMENT_FEE_PERCENTAGE: "{{ env.PAYMENT_FEE_PERCENTAGE | string }}"
+          TANDEM_CLIENT_ID: "{{ env.TANDEM_CLIENT_ID | string }}"
+          TANDEM_CLIENT_SECRET: "{{ env.TANDEM_CLIENT_SECRET | string }}"
+          TANDEM_BASE_URL: "{{ env.TANDEM_BASE_URL | string }}"
+          ZOOM_CLIENT_ID: "{{ env.ZOOM_CLIENT_ID | string }}"
+          ZOOM_CLIENT_SECRET: "{{ env.ZOOM_CLIENT_SECRET | string }}"
+        log_driver: awslogs
+        log_options:
+          awslogs-region: "{{ awslogs_region }}"
+          awslogs-group: "{{ awslogs_group }}"
+        state: started
+        restart_policy: always
+      with_sequence: count={{ container_count }}
