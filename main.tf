@@ -90,8 +90,8 @@ module "provision" {
   domain                    = var.domain
   app_instance_public_ip    = module.app.instance_public_ip
   app_privkey_path          = "${path.root}/${local.private_key_filename}"
-  app_image                 = "calendso/calendso"
-  app_image_tag             = "latest"
+  app_image                 = "ghcr.io/norumin/calendso"
+  app_image_tag             = local.stage
   app_container_count       = 1
   app_container_name_prefix = "app"
   app_container_env_secrets = local.app_env_secrets
