@@ -33,5 +33,11 @@ override.tf.json
 .terraformrc
 terraform.rc
 
+# Artifact of terraform output and graph
+output.json
+outputs.json
+graph.gv
+graph.svg
+
 # Private key files
 *.pem
