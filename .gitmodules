@@ -1,0 +1,3 @@
+[submodule "docker/calcom"]
+	path = docker/calcom
+	url = https://github.com/calcom/cal.com.git
