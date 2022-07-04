@@ -55,13 +55,27 @@ jobs:
         id: build-args
         run: |
           jq ".app_image_build_args.value" -Mr output.json | jq 'keys[] as $k | "\($k)=\(.[$k])"' -Mr > build_args.env
-          echo ::set-output name=build_args::$(cat build_args.env)
+          echo ::set-output name=NODE_ENV::$(jq ".app_image_build_args.value.NODE_ENV" -Mr output.json)
+          echo ::set-output name=NEXT_PUBLIC_WEBAPP_URL::$(jq ".app_image_build_args.value.NEXT_PUBLIC_WEBAPP_URL" -Mr output.json)
+          echo ::set-output name=NEXT_PUBLIC_APP_URL::$(jq ".app_image_build_args.value.NEXT_PUBLIC_APP_URL" -Mr output.json)
+          echo ::set-output name=NEXT_PUBLIC_LICENSE_CONSENT::$(jq ".app_image_build_args.value.NEXT_PUBLIC_LICENSE_CONSENT" -Mr output.json)
+          echo ::set-output name=CALCOM_TELEMETRY_DISABLED::$(jq ".app_image_build_args.value.CALCOM_TELEMETRY_DISABLED" -Mr output.json)
+          echo ::set-output name=DATABASE_URL::$(jq ".app_image_build_args.value.DATABASE_URL" -Mr output.json)
+          echo ::set-output name=NEXTAUTH_SECRET::$(jq ".app_image_build_args.value.NEXTAUTH_SECRET" -Mr output.json)
+          echo ::set-output name=CALENDSO_ENCRYPTION_KEY::$(jq ".app_image_build_args.value.CALENDSO_ENCRYPTION_KEY" -Mr output.json)
       - name: Build and push docker image
         uses: docker/build-push-action@v3
         with:
           context: docker/.
           build-args: |
-            ${{ steps.output.outputs.build_args }}
+            NODE_ENV=${{ steps.build-args.outputs.NODE_ENV }}
+            NEXT_PUBLIC_WEBAPP_URL=${{ steps.build-args.outputs.NEXT_PUBLIC_WEBAPP_URL }}
+            NEXT_PUBLIC_APP_URL=${{ steps.build-args.outputs.NEXT_PUBLIC_APP_URL }}
+            NEXT_PUBLIC_LICENSE_CONSENT=${{ steps.build-args.outputs.NEXT_PUBLIC_LICENSE_CONSENT }}
+            CALCOM_TELEMETRY_DISABLED=${{ steps.build-args.outputs.CALCOM_TELEMETRY_DISABLED }}
+            DATABASE_URL=${{ steps.build-args.outputs.DATABASE_URL }}
+            NEXTAUTH_SECRET=${{ steps.build-args.outputs.NEXTAUTH_SECRET }}
+            CALENDSO_ENCRYPTION_KEY=${{ steps.build-args.outputs.CALENDSO_ENCRYPTION_KEY }}
           tags: |
             ghcr.io/norumin/calendso:${{ env.SHA }}
             ghcr.io/norumin/calendso:${{ env.STAGE }}
