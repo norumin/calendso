@@ -17,6 +17,7 @@ output "app_lb_dns_name" {
 output "app_image_build_args" {
   description = "Build-time arguments of app docker image"
   value = {
+    NODE_ENV                    = local.stage
     NEXT_PUBLIC_WEBAPP_URL      = "https://${var.domain}"
     NEXT_PUBLIC_APP_URL         = "https://${var.domain}"
     NEXT_PUBLIC_LICENSE_CONSENT = "agree"
