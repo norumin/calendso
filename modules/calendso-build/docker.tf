@@ -1,6 +1,5 @@
 resource "null_resource" "app_image_builder" {
   triggers = {
-    src_hash = filesha256("${path.module}/docker/Dockerfile")
     variables = jsonencode([
       var.src_repo,
       var.src_revision,
