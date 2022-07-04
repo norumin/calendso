@@ -23,16 +23,16 @@ output "app_image_build_args" {
     CALCOM_TELEMETRY_DISABLED   = "1"
     DATABASE_URL = join("", [
       "postgresql://",
-      data.aws_secretsmanager_secret_version.app_env.db_username,
+      local.app_env_secrets.db_username,
       ":",
-      data.aws_secretsmanager_secret_version.app_env.db_password,
+      local.app_env_secrets.db_password,
       "@",
       module.data.db_endpoint,
       "/",
-      data.aws_secretsmanager_secret_version.app_env.db_name
+      local.app_env_secrets.db_name
     ])
-    NEXTAUTH_SECRET         = data.aws_secretsmanager_secret_version.auth_secret
-    CALENDSO_ENCRYPTION_KEY = data.aws_secretsmanager_secret_version.encryption_key
+    NEXTAUTH_SECRET         = local.app_env_secrets.auth_secret
+    CALENDSO_ENCRYPTION_KEY = local.app_env_secrets.encryption_key
   }
   sensitive = true
 }
