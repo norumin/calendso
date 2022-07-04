@@ -49,9 +49,7 @@ jobs:
         run: terraform workspace select ${{ env.STAGE }}
       - name: Terraform output
         id: output
-        run: |
-          terraform output -json -no-color > output.json
-          cat output.json
+        run: terraform output -json -no-color > output.json
       - name: Prepare build args list
         id: build-args
         run: |
@@ -61,7 +59,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: docker/.
-          build-args: ${{ steps.output.puts.build_args }}
+          build-args: ${{ steps.output.outputs.build_args }}
           tags: |
             ghcr.io/norumin/calendso:${{ env.SHA }}
             ghcr.io/norumin/calendso:${{ env.STAGE }}

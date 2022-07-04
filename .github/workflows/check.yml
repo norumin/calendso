@@ -34,14 +34,7 @@ jobs:
       - name: Prepare variables
         id: vars
         run: |
-          export TIMESTAMP=$(date +%s)
-          export GITHUB_SHA_SHORT=$(git rev-parse --short HEAD)
           export PRIVATE_KEY_FILENAME="kp-${{ env.APP }}-app-${{ matrix.stage }}.pem"
-          echo "TIMESTAMP: $TIMESTAMP"
-          echo "GITHUB_SHA_SHORT: $GITHUB_SHA_SHORT"
-          echo "PRIVATE_KEY_FILENAME: $PRIVATE_KEY_FILENAME"
-          echo "::set-output name=timestamp::$TIMESTAMP"
-          echo "::set-output name=sha_short::$GITHUB_SHA_SHORT"
           echo "::set-output name=private_key_filename::$PRIVATE_KEY_FILENAME"
       - name: Checkout
         uses: actions/checkout@v2
@@ -82,23 +75,12 @@ jobs:
         run: terraform plan -detailed-exitcode -no-color
       - name: Terraform output
         id: output
-        run: |
-          terraform output -json -no-color > output.json
-          cat output.json
+        run: terraform output -json -no-color > output.json
       - name: Terraform graph
         id: graph
         run: |
           terraform graph -draw-cycles > graph.gv
-          cat graph.gv
           dot -Tsvg graph.gv > graph.svg
-      - name: Upload artifact of terraform output and graph
-        uses: actions/upload-artifact@v2
-        with:
-          name: terraform-output-and-graph-${{ steps.vars.outputs.timestamp }}-${{ steps.vars.outputs.sha_short }}
-          path: |
-            output.json
-            graph.gv
-            graph.svg
       - name: Generate terraform documents
         uses: terraform-docs/gh-actions@v1.0.0
         with:
