@@ -22,7 +22,7 @@ module "build" {
 
   stage                     = local.stage
   src_repo                  = "https://github.com/calcom/docker.git"
-  src_revision              = "d87f0ef"
+  src_revision              = "d87f0ef683e0c2dc0dbb43f8f8500db65d8e0651"
   image_registry            = "ghcr.io"
   image_name                = "norumin/calendso"
   image_tag                 = "v1.7.5"
