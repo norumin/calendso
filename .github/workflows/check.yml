@@ -58,34 +58,34 @@ jobs:
       - name: Download private key file
         run: aws s3 cp s3://${{ secrets.BACKEND_BUCKET }}/env:/${{ matrix.stage }}/${{ env.APP }}/${{ steps.vars.outputs.private_key_filename }} ${{ steps.vars.outputs.private_key_filename }}
         continue-on-error: true
-      - name: Setup Terraform
+      - name: Setup terraform
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 1.2.4
           terraform_wrapper: false
-      - name: Setup Graphviz
+      - name: Setup graphviz
         uses: ts-graphviz/setup-graphviz@v1
-      - name: Terraform Fmt
+      - name: Terraform fmt
         id: fmt
         run: terraform fmt -check -diff -recursive -no-color
-      - name: Terraform Init
+      - name: Terraform init
         id: init
         run: terraform init -no-color
       - name: Select terraform workspace
         id: select-workspace
         run: terraform workspace select ${{ matrix.stage }}
-      - name: Terraform Validate
+      - name: Terraform validate
         id: validate
         run: terraform validate -no-color
-      - name: Terraform Plan (detailed exitcode)
+      - name: Terraform plan (detailed exitcode)
         id: plan
         run: terraform plan -detailed-exitcode -no-color
-      - name: Terraform Output
+      - name: Terraform output
         id: output
         run: |
           terraform output -json -no-color > output.json
           cat output.json
-      - name: Terraform Graph
+      - name: Terraform graph
         id: graph
         run: |
           terraform graph -draw-cycles > graph.gv
