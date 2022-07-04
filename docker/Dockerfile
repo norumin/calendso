@@ -1,4 +1,4 @@
-FROM node:14 as builder
+FROM node:14.19.3-alpine as builder
 
 WORKDIR /calcom
 
