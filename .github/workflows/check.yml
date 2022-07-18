@@ -7,13 +7,11 @@ on:
     paths-ignore:
       - '**/*.md'
       - 'docs/**'
-      - 'docker/**'
       - LICENSE
   pull_request:
     paths-ignore:
       - '**/*.md'
       - 'docs/**'
-      - 'docker/**'
       - LICENSE
   schedule:
     - cron: '0 12 * * *'

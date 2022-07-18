@@ -75,27 +75,3 @@ module "end" {
   app_lb_log_bucket    = module.log.app_lb_log_bucket
   app_lb_tg_port       = 80
 }
-
-module "provision" {
-  source = "./modules/calendso-provision"
-  depends_on = [
-    module.root,
-    module.app,
-    module.data,
-    module.log,
-    module.end,
-  ]
-
-  stage                     = local.stage
-  domain                    = var.domain
-  app_instance_public_ip    = module.app.instance_public_ip
-  app_privkey_path          = "${path.root}/${local.private_key_filename}"
-  app_image                 = "ghcr.io/norumin/calendso"
-  app_image_tag             = local.stage
-  app_container_count       = 1
-  app_container_name_prefix = "app"
-  app_container_env_secrets = local.app_env_secrets
-  app_container_ports       = "80:3000"
-  app_container_log_group   = module.log.app_container_log_group
-  db_endpoint               = module.data.db_endpoint
-}
