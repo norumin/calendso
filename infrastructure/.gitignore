@@ -33,12 +33,27 @@ override.tf.json
 .terraformrc
 terraform.rc
 
+# terragrunt cache directories
+**/.terragrunt-cache/*
+
+# Terragrunt debug output file (when using `--terragrunt-debug` option)
+terragrunt-debug.tfvars.json
+
 # Artifact of terraform output and graph
 output.json
-outputs.json
 graph.gv
 graph.svg
 build_args.env
 
-# Private key files
+# SSH keypairs
 *.pem
+*.pem.pub
+
+# dotenv files
+.env
+.env.*
+!.env.example
+
+# terragrunt generated files
+backend.tf
+providers.tf

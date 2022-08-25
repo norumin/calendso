@@ -1,15 +1,3 @@
-variable "AWS_REGION" {
-  description = "AWS default region"
-  type        = string
-  default     = "us-east-2"
-}
-
-variable "REPO_ORIGIN" {
-  description = "Owner repository of this project"
-  type        = string
-  default     = "git://github.com/norumin/calendso.git"
-}
-
 variable "app_name" {
   description = "Name of this app"
   type        = string
@@ -22,10 +10,10 @@ variable "app" {
   default     = "calendso"
 }
 
-variable "apex_domain" {
-  description = "Apex domain to host this app"
+variable "stage" {
+  description = "Stage of deployment"
   type        = string
-  default     = "norumin.com"
+  default     = "production"
 }
 
 variable "domain" {
@@ -34,10 +22,14 @@ variable "domain" {
   default     = "calendso.norumin.com"
 }
 
-variable "alternative_domains" {
-  description = "Alternative domains of this app"
-  type        = list(string)
-  default = [
-    "cal.norumin.com",
-  ]
+variable "app_instance_public_key" {
+  description = "SSH public key for the app instance"
+  type        = string
+  sensitive   = true
+}
+
+variable "calendso_ref" {
+  description = "Ref of calendso to deploy"
+  type        = string
+  default     = "v1.9.1"
 }
