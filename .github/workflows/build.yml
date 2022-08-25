@@ -1,0 +1,148 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - production
+      - staging
+      - develop
+    paths:
+      - 'calendso-ref'
+  workflow_dispatch:
+
+jobs:
+  vars:
+    name: Prepare variables for build
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      REPO_ORIGIN: ${{ github.repositoryUrl }}
+      BACKEND_BUCKET: ${{ secrets.BACKEND_BUCKET }}
+      BACKEND_LOCKTABLE: ${{ secrets.BACKEND_LOCKTABLE }}
+      BACKEND_REGION: ${{ secrets.BACKEND_REGION }}
+      APP_NAME: ${{ secrets.APP_NAME }}
+      APP: ${{ secrets.APP }}
+      STAGE: ${{ github.ref_name }}
+      DOMAIN: ${{ secrets.DOMAIN }}
+      APP_INSTANCE_PUBLIC_KEY: ${{ secrets.APP_INSTANCE_PUBLIC_KEY }}
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+          mask-aws-account-id: true
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.2.7
+          terraform_wrapper: false
+      - name: Setup Terragrunt
+        uses: autero1/action-terragrunt@v1
+        with:
+          terragrunt_version: 0.38.7
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Read calendso-ref
+        id: calendso-ref
+        run: echo ::set-output name=calendso_ref::$(cat calendso-ref)
+      - name: Check for infrastructure drift
+        env:
+          CALENDSO_REF: ${{ steps.calendso-ref.outputs.calendso_ref }}
+        run: terragrunt plan -detailed-exitcode -no-color
+      - name: Generate terraform output
+        env:
+          CALENDSO_REF: ${{ steps.calendso-ref.outputs.calendso_ref }}
+        working-directory: ./infrastructure
+        run: terragrunt output -json -no-color > output.json
+      - name: Extract build-time arguments from terraform output and set as environment variables
+        working-directory: ./infrastructure
+        run: jq -Mr ".app_image_build_args.value|to_entries|map(\"\(.key)='\(.value)'\")[]" < output.json >> $GITHUB_ENV
+    outputs:
+      STAGE: ${{ env.STAGE }}
+      POSTGRES_USER: ${{ env.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+      POSTGRES_DB: ${{ env.POSTGRES_DB }}
+      CALENDSO_REF: ${{ env.CALENDSO_REF }}
+      ECR_REPO_URL: ${{ env.ECR_REPO_URL }}
+      NEXT_PUBLIC_LICENSE_CONSENT: ${{ env.NEXT_PUBLIC_LICENSE_CONSENT }}
+      NEXT_PUBLIC_WEBAPP_URL: ${{ env.NEXT_PUBLIC_WEBAPP_URL }}
+      NEXT_PUBLIC_APP_URL: ${{ env.NEXT_PUBLIC_APP_URL }}
+      DATABASE_URL: ${{ env.DATABASE_URL }}
+      NEXTAUTH_SECRET: ${{ env.NEXTAUTH_SECRET }}
+      CALENDSO_ENCRYPTION_KEY: ${{ env.CALENDSO_ENCRYPTION_KEY }}
+      CALCOM_TELEMETRY_DISABLED: ${{ env.CALCOM_TELEMETRY_DISABLED }}
+  build:
+    name: Build docker image and push to ECR
+    needs: [vars]
+    runs-on: ubuntu-latest
+    services:
+      database:
+        image: postgres:14
+        env:
+          POSTGRES_USER: ${{ needs.vars.outputs.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ needs.vars.outputs.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ needs.vars.outputs.POSTGRES_DB }}
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+          mask-aws-account-id: true
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Checkout calendso source
+        env:
+          CALENDSO_REF: ${{ needs.vars.outputs.CALENDSO_REF }}
+        uses: actions/checkout@v3
+        with:
+          repository: calcom/cal.com
+          path: builder/calendso
+          ref: ${{ env.CALENDSO_REF }}
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v2
+        with:
+          buildkitd-flags: |
+            --allow-insecure-entitlement security.insecure --allow-insecure-entitlement network.host
+      - name: Build and push image
+        id: build
+        env:
+          ECR_REPO_URL: ${{ needs.vars.outputs.ECR_REPO_URL }}
+          STAGE: ${{ needs.vars.outputs.STAGE }}
+          NEXT_PUBLIC_LICENSE_CONSENT: ${{ needs.vars.outputs.NEXT_PUBLIC_LICENSE_CONSENT }}
+          NEXT_PUBLIC_WEBAPP_URL: ${{ needs.vars.outputs.NEXT_PUBLIC_WEBAPP_URL }}
+          NEXT_PUBLIC_APP_URL: ${{ needs.vars.outputs.NEXT_PUBLIC_APP_URL }}
+          DATABASE_URL: ${{ needs.vars.outputs.DATABASE_URL }}
+          NEXTAUTH_SECRET: ${{ needs.vars.outputs.NEXTAUTH_SECRET }}
+          CALENDSO_ENCRYPTION_KEY: ${{ needs.vars.outputs.CALENDSO_ENCRYPTION_KEY }}
+          CALCOM_TELEMETRY_DISABLED: ${{ needs.vars.outputs.CALCOM_TELEMETRY_DISABLED }}
+        uses: docker/build-push-action@v3
+        with:
+          context: ./builder
+          file: ./Dockerfile
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            ${{ env.ECR_REPO_URL }}:latest
+          build-args: |
+            STAGE=${{ env.STAGE }}
+            NEXT_PUBLIC_LICENSE_CONSENT=${{ env.NEXT_PUBLIC_LICENSE_CONSENT }}
+            NEXT_PUBLIC_WEBAPP_URL=${{ env.NEXT_PUBLIC_WEBAPP_URL }}
+            NEXT_PUBLIC_APP_URL=${{ env.NEXT_PUBLIC_APP_URL }}
+            DATABASE_URL=${{ env.DATABASE_URL }}
+            NEXTAUTH_SECRET=${{ env.NEXTAUTH_SECRET }}
+            CALENDSO_ENCRYPTION_KEY=${{ env.CALENDSO_ENCRYPTION_KEY }}
+            CALCOM_TELEMETRY_DISABLED=${{ env.CALCOM_TELEMETRY_DISABLED }}
