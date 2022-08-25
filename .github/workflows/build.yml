@@ -69,20 +69,28 @@ jobs:
       - name: Extract build-time arguments from terraform output and set as environment variables
         working-directory: ./infrastructure
         run: jq -Mr ".app_image_build_args.value|to_entries|map(\"\(.key)='\(.value)'\")[]" < output.json >> $GITHUB_ENV
+      - name: Mask sensitive values
+        run: |
+          echo "::add-mask::$POSTGRES_PASSWORD"
+          echo "::add-mask::$ECR_REPO_URL"
+          echo "::add-mask::$NEXTAUTH_SECRET"
+          echo "::add-mask::$CALENDSO_ENCRYPTION_KEY"
       - name: Start database server
-        run: docker run \
-          -d \
-          --name database
-          -e "POSTGRES_USER=${{ env.POSTGRES_USER }}" \
-          -e "POSTGRES_PASSWORD=${{ env.POSTGRES_PASSWORD }}" \
-          -e "POSTGRES_DB=${{ env.POSTGRES_DB }}" \
-          -e GITHUB_ACTIONS=true \
-          -e CI=true \
-          --health-cmd pg_isready \
-          --health-interval 10s \
-          --health-timeout 5s \
-          --health-retries 5 \
-          postgres:14
+        run: |
+          docker run \
+            --name database \
+            -d \
+            -p 5432:5432/tcp \
+            -e "POSTGRES_USER=$POSTGRES_USER" \
+            -e "POSTGRES_PASSWORD=$POSTGRES_PASSWORD" \
+            -e "POSTGRES_DB=$POSTGRES_DB" \
+            -e GITHUB_ACTIONS=true \
+            -e CI=true \
+            --health-cmd pg_isready \
+            --health-interval 10s \
+            --health-timeout 5s \
+            --health-retries 5 \
+            postgres:14
       - name: Build and push image
         id: build
         uses: docker/build-push-action@v3
