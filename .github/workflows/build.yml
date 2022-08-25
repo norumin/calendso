@@ -6,8 +6,6 @@ on:
       - production
       - staging
       - develop
-    paths:
-      - 'calendso-ref'
   workflow_dispatch:
 
 jobs:
