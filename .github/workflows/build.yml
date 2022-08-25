@@ -18,8 +18,8 @@ jobs:
       BACKEND_BUCKET: ${{ secrets.BACKEND_BUCKET }}
       BACKEND_LOCKTABLE: ${{ secrets.BACKEND_LOCKTABLE }}
       BACKEND_REGION: ${{ secrets.BACKEND_REGION }}
-      APP_NAME: Norumin Scheduling System
-      APP: calendso
+      APP_NAME: ${{ secrets.APP_NAME }}
+      APP: ${{ secrets.APP }}
       STAGE: ${{ github.ref_name }}
       DOMAIN: ${{ secrets.DOMAIN }}
       APP_INSTANCE_PUBLIC_KEY: ${{ secrets.APP_INSTANCE_PUBLIC_KEY }}
@@ -68,7 +68,7 @@ jobs:
         run: terragrunt output -json -no-color > output.json
       - name: Extract build-time arguments from terraform output and set as environment variables
         working-directory: ./infrastructure
-        run: jq -Mr ".app_image_build_args.value|to_entries|map(\"\(.key)='\(.value)'\")[]" < output.json >> $GITHUB_ENV
+        run: jq -Mr ".app_image_build_args.value|to_entries|map(\"\(.key)=\(.value)\")[]" < output.json >> $GITHUB_ENV
       - name: Mask sensitive values
         run: |
           echo "::add-mask::$POSTGRES_PASSWORD"
@@ -91,14 +91,16 @@ jobs:
             --health-timeout 5s \
             --health-retries 5 \
             postgres:14
-      - name: Build docker image
+      - name: Build and push image
+        id: build
         uses: docker/build-push-action@v3
         with:
           context: ./builder
-          file: ./Dockerfile
+          file: ./builder/Dockerfile
+          push: true
           platforms: linux/amd64,linux/arm64
           tags: |
-            ${{ env.APP }}:latest
+            ${{ env.ECR_REPO_URL }}:latest
           build-args: |
             STAGE=${{ env.STAGE }}
             NEXT_PUBLIC_LICENSE_CONSENT=${{ env.NEXT_PUBLIC_LICENSE_CONSENT }}
@@ -108,7 +110,3 @@ jobs:
             NEXTAUTH_SECRET=${{ env.NEXTAUTH_SECRET }}
             CALENDSO_ENCRYPTION_KEY=${{ env.CALENDSO_ENCRYPTION_KEY }}
             CALCOM_TELEMETRY_DISABLED=${{ env.CALCOM_TELEMETRY_DISABLED }}
-      - name: Push docker image to ECR repo
-        run: |
-          docker tag ${{ env.APP }}:latest ${{ env.ECR_REPO_URL }}:latest
-          docker push ${{ env.ECR_REPO_URL }}:latest
