@@ -7,7 +7,7 @@ variable "AWS_REGION" {
 variable "REPO_ORIGIN" {
   description = "Owner repository of this project"
   type        = string
-  default     = "https://github.com/norumin/calendso.git"
+  default     = "git://github.com/norumin/calendso.git"
 }
 
 variable "app_name" {
