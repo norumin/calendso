@@ -43,7 +43,6 @@ terragrunt-debug.tfvars.json
 output.json
 graph.gv
 graph.svg
-build_args.env
 
 # SSH keypairs
 *.pem
