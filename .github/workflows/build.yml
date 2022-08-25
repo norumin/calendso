@@ -60,6 +60,8 @@ jobs:
           repository: calcom/cal.com
           path: builder/calendso
           ref: ${{ env.CALENDSO_REF }}
+      - name: Read calendso-ref
+        run: echo "CALENDSO_REF=$(cat calendso-ref)" >> $GITHUB_ENV
       - name: Check for infrastructure drift
         env:
           CALENDSO_REF: ${{ steps.calendso-ref.outputs.calendso_ref }}
