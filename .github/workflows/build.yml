@@ -52,24 +52,18 @@ jobs:
             --allow-insecure-entitlement security.insecure --allow-insecure-entitlement network.host
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Read calendso-ref
+        run: echo "CALENDSO_REF=$(cat calendso-ref)" >> $GITHUB_ENV
       - name: Checkout calendso source
-        env:
-          CALENDSO_REF: ${{ needs.vars.outputs.CALENDSO_REF }}
         uses: actions/checkout@v3
         with:
           repository: calcom/cal.com
           path: builder/calendso
           ref: ${{ env.CALENDSO_REF }}
-      - name: Read calendso-ref
-        run: echo "CALENDSO_REF=$(cat calendso-ref)" >> $GITHUB_ENV
       - name: Check for infrastructure drift
-        env:
-          CALENDSO_REF: ${{ steps.calendso-ref.outputs.calendso_ref }}
         working-directory: ./infrastructure
         run: terragrunt plan -detailed-exitcode -no-color
       - name: Generate terraform output
-        env:
-          CALENDSO_REF: ${{ steps.calendso-ref.outputs.calendso_ref }}
         working-directory: ./infrastructure
         run: terragrunt output -json -no-color > output.json
       - name: Extract build-time arguments from terraform output and set as environment variables
