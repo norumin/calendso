@@ -48,6 +48,7 @@ jobs:
       - name: Check for infrastructure drift
         env:
           CALENDSO_REF: ${{ steps.calendso-ref.outputs.calendso_ref }}
+        working-directory: ./infrastructure
         run: terragrunt plan -detailed-exitcode -no-color
       - name: Generate terraform output
         env:
