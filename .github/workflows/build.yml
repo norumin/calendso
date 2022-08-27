@@ -70,6 +70,7 @@ jobs:
         working-directory: ./infrastructure
         run: |
           jq -Mr ".app_image_build_args.value|to_entries|map(\"\(.key)=\(.value)\")[]" < output.json >> $GITHUB_ENV
+          source $GITHUB_ENV
           echo "::add-mask::$POSTGRES_PASSWORD"
           echo "::add-mask::$ECR_REPO_URL"
           echo "::add-mask::$NEXTAUTH_SECRET"
