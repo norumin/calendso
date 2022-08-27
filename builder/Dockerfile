@@ -1,7 +1,7 @@
 # Builder
 FROM node:16 as builder
 
-WORKDIR /calcom
+WORKDIR /calendso
 
 ARG STAGE
 ARG NEXT_PUBLIC_LICENSE_CONSENT
