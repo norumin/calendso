@@ -1,0 +1,97 @@
+---
+- name: Provision app instance
+  hosts: all
+  become: true
+  vars:
+    image: calendso/calendso
+    tag: latest
+    container_count: 1
+    container_name_prefix: app
+    ports: 80:8080
+    awslogs_region: us-east-2
+    awslogs_group:
+  tasks:
+    - name: Install aptitude
+      apt:
+        name: aptitude
+        state: latest
+        update_cache: true
+    - name: Install required system packages
+      apt:
+        pkg:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - python3-pip
+          - virtualenv
+          - python3-setuptools
+          - amazon-ecr-credential-helper
+        state: latest
+        update_cache: true
+    - name: Add docker gpg apt key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+    - name: Add docker repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu focal stable
+        state: present
+    - name: Update apt and install docker-ce
+      apt:
+        name: docker-ce
+        state: latest
+        update_cache: true
+    - name: Prepare docker config directory
+      file:
+        path: ~/.docker
+        state: directory
+    - name: Configure ECR login helper
+      ansible.builtin.copy:
+        content: '{"credsStore": "ecr-login"}'
+        dest: ~/.docker/config.json
+    - name: Pull docker image
+      community.docker.docker_image:
+        name: "{{ image }}:{{ tag }}"
+        source: pull
+    - name: Create containers
+      community.docker.docker_container:
+        name: "{{ container_name_prefix }}{{ item }}"
+        image: "{{ image }}:{{ tag }}"
+        ports: "{{ ports }}"
+        env:
+          NEXT_PUBLIC_LICENSE_CONSENT: "{{ NEXT_PUBLIC_LICENSE_CONSENT | string }}"
+          CALCOM_LICENSE_KEY: "{{ CALCOM_LICENSE_KEY | string }}"
+          DATABASE_URL: "{{ DATABASE_URL | string }}"
+          NEXT_PUBLIC_WEBAPP_URL: "{{ NEXT_PUBLIC_WEBAPP_URL | string }}"
+          NEXT_PUBLIC_WEBSITE_URL: "{{ NEXT_PUBLIC_WEBSITE_URL | string }}"
+          NEXT_PUBLIC_CONSOLE_URL: "{{ NEXT_PUBLIC_CONSOLE_URL | string }}"
+          NEXT_PUBLIC_EMBED_LIB_URL: "{{ NEXT_PUBLIC_EMBED_LIB_URL | string }}"
+          SAML_DATABASE_URL: "{{ SAML_DATABASE_URL | string }}"
+          SAML_ADMINS: "{{ SAML_ADMINS | string }}"
+          NEXTAUTH_URL: "{{ NEXTAUTH_URL | string }}"
+          NEXTAUTH_SECRET: "{{ NEXTAUTH_SECRET | string }}"
+          NEXTAUTH_COOKIE_DOMAIN: "{{ NEXTAUTH_COOKIE_DOMAIN | string }}"
+          CALCOM_TELEMETRY_DISABLED: "{{ CALCOM_TELEMETRY_DISABLED | string }}"
+          CRON_API_KEY: "{{ CRON_API_KEY | string }}"
+          CALENDSO_ENCRYPTION_KEY: "{{ CALENDSO_ENCRYPTION_KEY | string }}"
+          SEND_FEEDBACK_EMAIL: "{{ SEND_FEEDBACK_EMAIL | string }}"
+          SENDGRID_API_KEY: "{{ SENDGRID_API_KEY | string }}"
+          SENDGRID_EMAIL: "{{ SENDGRID_EMAIL | string }}"
+          TWILIO_SID: "{{ TWILIO_SID | string }}"
+          TWILIO_TOKEN: "{{ TWILIO_TOKEN | string }}"
+          TWILIO_MESSAGING_SID: "{{ TWILIO_MESSAGING_SID | string }}"
+          API_KEY_PREFIX: "{{ API_KEY_PREFIX | string }}"
+          EMAIL_FROM: "{{ EMAIL_FROM | string }}"
+          EMAIL_SERVER_HOST: "{{ EMAIL_SERVER_HOST | string }}"
+          EMAIL_SERVER_PORT: "{{ EMAIL_SERVER_PORT | string }}"
+          EMAIL_SERVER_USER: "{{ EMAIL_SERVER_USER | string }}"
+          EMAIL_SERVER_PASSWORD: "{{ EMAIL_SERVER_PASSWORD | string }}"
+          NEXT_PUBLIC_TEAM_IMPERSONATION: "{{ NEXT_PUBLIC_TEAM_IMPERSONATION | string }}"
+        log_driver: awslogs
+        log_options:
+          awslogs-region: "{{ awslogs_region }}"
+          awslogs-group: "{{ awslogs_group }}"
+        state: started
+        restart_policy: always
+      with_sequence: count={{ container_count }}
