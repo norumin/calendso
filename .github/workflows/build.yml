@@ -79,7 +79,7 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v3
         with:
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           context: ./builder
           file: ./builder/Dockerfile
           build-args: |
