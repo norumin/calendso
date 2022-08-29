@@ -34,7 +34,6 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
           mask-aws-account-id: true
       - name: Login to Amazon ECR
-        id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -88,22 +87,20 @@ jobs:
             --health-timeout 5s \
             --health-retries 5 \
             postgres:14
-      - name: Build and push image
-        id: build
-        uses: docker/build-push-action@v3
-        with:
-          context: ./builder
-          file: ./builder/Dockerfile
-          network: builder
-          build-args: |
-            STAGE=${{ env.STAGE }}
-            NEXT_PUBLIC_LICENSE_CONSENT=${{ env.NEXT_PUBLIC_LICENSE_CONSENT }}
-            NEXT_PUBLIC_WEBAPP_URL=${{ env.NEXT_PUBLIC_WEBAPP_URL }}
-            NEXT_PUBLIC_APP_URL=${{ env.NEXT_PUBLIC_APP_URL }}
-            DATABASE_URL=${{ env.DATABASE_URL }}
-            NEXTAUTH_SECRET=${{ env.NEXTAUTH_SECRET }}
-            CALENDSO_ENCRYPTION_KEY=${{ env.CALENDSO_ENCRYPTION_KEY }}
-            CALCOM_TELEMETRY_DISABLED=${{ env.CALCOM_TELEMETRY_DISABLED }}
-          tags: |
-            ${{ env.ECR_REPO_URL }}:latest
-          push: true
+      - name: Build image
+        working-directory: ./builder
+        run: |
+          docker build \
+            --network builder \
+            --build-arg STAGE=${{ env.STAGE }} \
+            --build-arg NEXT_PUBLIC_LICENSE_CONSENT=${{ env.NEXT_PUBLIC_LICENSE_CONSENT }} \
+            --build-arg NEXT_PUBLIC_WEBAPP_URL=${{ env.NEXT_PUBLIC_WEBAPP_URL }} \
+            --build-arg NEXT_PUBLIC_APP_URL=${{ env.NEXT_PUBLIC_APP_URL }} \
+            --build-arg DATABASE_URL=${{ env.DATABASE_URL }} \
+            --build-arg NEXTAUTH_SECRET=${{ env.NEXTAUTH_SECRET }} \
+            --build-arg CALENDSO_ENCRYPTION_KEY=${{ env.CALENDSO_ENCRYPTION_KEY }} \
+            --build-arg CALCOM_TELEMETRY_DISABLED=${{ env.CALCOM_TELEMETRY_DISABLED }} \
+            -t ${{ env.ECR_REPO_URL }}:latest \
+            .
+      - name: Push image to ECR
+        run: docker push ${{ env.ECR_REPO_URL }}:latest
