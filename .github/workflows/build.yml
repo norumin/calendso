@@ -45,16 +45,6 @@ jobs:
         uses: autero1/action-terragrunt@v1.1.1
         with:
           terragrunt_version: 0.38.7
-      - name: Setup QEMU
-        uses: docker/setup-qemu-action@v2
-      - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v2
-        with:
-          driver: docker-container
-          driver-opts: network=builder
-          buildkitd-flags: |
-            --allow-insecure-entitlement security.insecure
-            --allow-insecure-entitlement network.host
       - name: Checkout
         uses: actions/checkout@v3
       - name: Read calendso-ref
@@ -102,7 +92,6 @@ jobs:
         id: build
         uses: docker/build-push-action@v3
         with:
-          platforms: linux/amd64,linux/arm64
           context: ./builder
           file: ./builder/Dockerfile
           network: builder
