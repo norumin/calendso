@@ -27,7 +27,7 @@ output "app_image_build_args" {
       ":",
       local.app_env_secrets.db_password,
       "@",
-      local.db_instance_hostname,
+      module.data.db_endpoint,
       "/",
       local.app_env_secrets.db_name
     ])

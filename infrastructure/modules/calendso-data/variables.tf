@@ -22,18 +22,13 @@ variable "stage" {
   default     = "production"
 }
 
-variable "public_subnet_ids" {
-  description = "Public subnet IDs of root VPC"
-  type        = list(string)
-}
-
-variable "private_subnet_ids" {
-  description = "Private subnets of root VPC"
+variable "subnet_ids" {
+  description = "Subnet IDs of root VPC to place the DB instance"
   type        = list(string)
 }
 
 variable "sg_ids" {
-  description = "IDs of security groups to apply to the db instance"
+  description = "IDs of security groups to apply to the DB instance"
   type        = list(string)
 }
 
@@ -84,10 +79,4 @@ variable "db_name" {
   description = "The name of the database to create when the DB instance is provisioned"
   type        = string
   default     = "calendso"
-}
-
-variable "db_publicly_accessible" {
-  description = "If the database instance is accessible from Internet"
-  type        = bool
-  default     = false
 }

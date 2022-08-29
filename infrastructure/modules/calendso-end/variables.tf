@@ -28,11 +28,6 @@ variable "domain" {
   default     = "calendso.norumin.com"
 }
 
-variable "alternative_domains" {
-  description = "Alternative domains of this app"
-  type        = list(string)
-}
-
 variable "route53_apex_zone_id" {
   description = "Zone ID of master hosted zone"
   type        = string

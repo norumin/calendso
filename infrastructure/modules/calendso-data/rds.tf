@@ -11,7 +11,7 @@ resource "aws_db_instance" "db" {
   db_name                   = var.db_name
   db_subnet_group_name      = aws_db_subnet_group.root.name
   vpc_security_group_ids    = var.sg_ids
-  publicly_accessible       = var.db_publicly_accessible
+  publicly_accessible       = true
   final_snapshot_identifier = "dbsnap-${local.slug}-final"
   copy_tags_to_snapshot     = true
   deletion_protection       = "production" == var.stage
@@ -24,7 +24,7 @@ resource "aws_db_instance" "db" {
 resource "aws_db_subnet_group" "root" {
   name        = "dbsng-${local.slug}"
   description = "DB subnet group inside the main VPC"
-  subnet_ids  = var.db_publicly_accessible ? var.public_subnet_ids : var.private_subnet_ids
+  subnet_ids  = var.subnet_ids
 
   tags = merge(local.default_tags, {
     Name = "dbsng-${local.slug}"
