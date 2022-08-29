@@ -1,4 +1,4 @@
-data "aws_ami" "ubuntu" {
+data "aws_ami" "focal_amd64" {
   most_recent = true
 
   filter {
@@ -38,6 +38,8 @@ data "aws_iam_policy_document" "app_instance_profile" {
   statement {
     actions = [
       "ecr:GetAuthorizationToken",
+      "ecr:BatchGetImage",
+      "ecr:GetDownloadUrlForLayer",
     ]
     effect    = "Allow"
     resources = ["*"]

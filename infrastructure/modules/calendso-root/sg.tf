@@ -106,19 +106,19 @@ resource "aws_security_group" "db" {
   }
 
   ingress {
-    description     = "Allow inbound traffic from everywhere to PGSQL port"
-    from_port       = 5432
-    to_port         = 5432
-    protocol        = "tcp"
-    cidr_blocks     = ["0.0.0.0/0"]
+    description = "Allow inbound traffic from everywhere to PGSQL port"
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
-    description     = "Allow outbound traffic from PGSQL port to everywhere"
-    from_port       = 5432
-    to_port         = 5432
-    protocol        = "tcp"
-    cidr_blocks     = ["0.0.0.0/0"]
+    description = "Allow outbound traffic from PGSQL port to everywhere"
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags = merge(local.default_tags, {
