@@ -9,6 +9,12 @@ output "app_lb_dns_name" {
   sensitive   = true
 }
 
+output "db_endpoint" {
+  description = "Endpoint of the database"
+  value       = module.data.db_endpoint
+  sensitive   = true
+}
+
 output "app_image_build_args" {
   description = "Build-time arguments of app docker image"
   value = {
