@@ -6,7 +6,20 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 4.21"
     }
+
+    google = {
+      source  = "hashicorp/google"
+      version = "~> 4.33"
+    }
   }
+}
+
+module "thirdparty" {
+  source = "./modules/calendso-thirdparty"
+
+  stage          = var.stage
+  gcp_org_id     = data.google_organization.norumin.org_id
+  gcp_project_id = "norumin-calendso"
 }
 
 module "root" {
