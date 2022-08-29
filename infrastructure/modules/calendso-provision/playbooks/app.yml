@@ -88,6 +88,8 @@
           EMAIL_SERVER_USER: "{{ EMAIL_SERVER_USER | string }}"
           EMAIL_SERVER_PASSWORD: "{{ EMAIL_SERVER_PASSWORD | string }}"
           NEXT_PUBLIC_TEAM_IMPERSONATION: "{{ NEXT_PUBLIC_TEAM_IMPERSONATION | string }}"
+          GOOGLE_API_CREDENTIALS: "{{ GOOGLE_API_CREDENTIALS | string }}"
+          GOOGLE_LOGIN_ENABLED: "{{ GOOGLE_LOGIN_ENABLED | string }}"
         log_driver: awslogs
         log_options:
           awslogs-region: "{{ awslogs_region }}"

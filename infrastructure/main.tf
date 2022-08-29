@@ -88,16 +88,17 @@ module "provision" {
     module.end,
   ]
 
-  stage                     = var.stage
-  domain                    = var.domain
-  app_instance_public_ip    = module.app.instance_public_ip
-  app_keypair_path          = "${path.root}/${local.keypair_filename}"
-  db_endpoint               = module.data.db_endpoint
-  ecr_repo_name             = module.root.ecr_repo_name
-  app_image_tag             = "latest"
-  app_container_count       = 1
-  app_container_name_prefix = local.app_container_name_prefix
-  app_container_ports       = "80:3000"
-  app_container_log_group   = module.log.app_container_log_group
-  app_container_env_secrets = local.app_env_secrets
+  stage                                = var.stage
+  domain                               = var.domain
+  app_instance_public_ip               = module.app.instance_public_ip
+  app_keypair_path                     = "${path.root}/${local.keypair_filename}"
+  db_endpoint                          = module.data.db_endpoint
+  ecr_repo_name                        = module.root.ecr_repo_name
+  app_image_tag                        = "latest"
+  app_container_count                  = 1
+  app_container_name_prefix            = local.app_container_name_prefix
+  app_container_ports                  = "80:3000"
+  app_container_log_group              = module.log.app_container_log_group
+  app_container_env_secrets            = local.app_env_secrets
+  app_container_google_api_credentials = module.thirdparty.google_api_credentials
 }

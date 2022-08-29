@@ -97,3 +97,9 @@ variable "app_container_env_secrets" {
   })
   sensitive = true
 }
+
+variable "app_container_google_api_credentials" {
+  description = "Google API credentials for the app container"
+  type        = string
+  sensitive   = true
+}

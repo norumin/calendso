@@ -14,6 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       AWS_REGION: ${{ secrets.AWS_REGION }}
+      GCP_REGION: ${{ secrets.AWS_REGION }}
+      GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
       REPO_ORIGIN: ${{ github.repositoryUrl }}
       BACKEND_BUCKET: ${{ secrets.BACKEND_BUCKET }}
       BACKEND_LOCKTABLE: ${{ secrets.BACKEND_LOCKTABLE }}
@@ -23,6 +25,17 @@ jobs:
       STAGE: ${{ github.ref_name }}
       DOMAIN: ${{ secrets.DOMAIN }}
       APP_INSTANCE_PUBLIC_KEY: ${{ secrets.APP_INSTANCE_PUBLIC_KEY }}
+    services:
+      database:
+        image: postgres:13.6
+        env:
+          POSTGRES_PASSWORD: p@$$vv0rD
+          POSTGRES_DB: builder
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -42,14 +55,6 @@ jobs:
         uses: autero1/action-terragrunt@v1.1.1
         with:
           terragrunt_version: 0.38.7
-      - name: Setup QEMU
-        uses: docker/setup-qemu-action@v2
-      - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v2
-        with:
-          buildkitd-flags: |
-            --allow-insecure-entitlement security.insecure
-            --allow-insecure-entitlement network.host
       - name: Checkout
         uses: actions/checkout@v3
       - name: Read calendso-ref
@@ -71,26 +76,22 @@ jobs:
         run: |
           jq -Mr ".app_image_build_args.value|to_entries|map(\"\(.key)=\(.value)\")[]" < output.json >> $GITHUB_ENV
           source $GITHUB_ENV
-          echo "::add-mask::$DATABASE_URL"
-          echo "::add-mask::$POSTGRES_PASSWORD"
           echo "::add-mask::$ECR_REPO_URL"
           echo "::add-mask::$NEXTAUTH_SECRET"
           echo "::add-mask::$CALENDSO_ENCRYPTION_KEY"
-      - name: Build and push image
-        uses: docker/build-push-action@v3
-        with:
-          platforms: linux/amd64
-          context: ./builder
-          file: ./builder/Dockerfile
-          build-args: |
-            STAGE=${{ env.STAGE }}
-            NEXT_PUBLIC_LICENSE_CONSENT=${{ env.NEXT_PUBLIC_LICENSE_CONSENT }}
-            NEXT_PUBLIC_WEBAPP_URL=${{ env.NEXT_PUBLIC_WEBAPP_URL }}
-            NEXT_PUBLIC_APP_URL=${{ env.NEXT_PUBLIC_APP_URL }}
-            DATABASE_URL=${{ env.DATABASE_URL }}
-            NEXTAUTH_SECRET=${{ env.NEXTAUTH_SECRET }}
-            CALENDSO_ENCRYPTION_KEY=${{ env.CALENDSO_ENCRYPTION_KEY }}
-            CALCOM_TELEMETRY_DISABLED=${{ env.CALCOM_TELEMETRY_DISABLED }}
-          tags: |
-            ${{ env.ECR_REPO_URL }}:latest
-          push: true
+      - name: Build image
+        working-directory: ./builder
+        run: |
+          docker build \
+            --build-arg STAGE=$STAGE \
+            --build-arg NEXT_PUBLIC_LICENSE_CONSENT=$NEXT_PUBLIC_LICENSE_CONSENT \
+            --build-arg NEXT_PUBLIC_WEBAPP_URL=$NEXT_PUBLIC_WEBAPP_URL \
+            --build-arg NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL \
+            --build-arg DATABASE_URL=postgresql://postgres:p@$$vv0rD@database:5432/builder \
+            --build-arg NEXTAUTH_SECRET=$NEXTAUTH_SECRET \
+            --build-arg CALENDSO_ENCRYPTION_KEY=$CALENDSO_ENCRYPTION_KEY \
+            --build-arg CALCOM_TELEMETRY_DISABLED=$CALCOM_TELEMETRY_DISABLED \
+            -t $ECR_REPO_URL:latest \
+            .
+      - name: Push image to ECR
+        run: docker push $ECR_REPO_URL:latest
