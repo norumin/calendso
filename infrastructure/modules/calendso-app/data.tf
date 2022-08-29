@@ -34,4 +34,12 @@ data "aws_iam_policy_document" "app_instance_profile" {
     effect    = "Allow"
     resources = ["*"]
   }
+
+  statement {
+    actions = [
+      "ecr:GetAuthorizationToken",
+    ]
+    effect    = "Allow"
+    resources = ["*"]
+  }
 }
