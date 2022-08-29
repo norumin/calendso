@@ -92,7 +92,7 @@ jobs:
             --health-retries 5 \
             postgres:14
           sudo printf "\n127.0.0.1 database\n" | sudo tee -a /etc/hosts
-          ./builder/scripts/wait-for-it.sh 5432
+          ./builder/scripts/wait-for-it.sh database:5432
       - name: Build and push image
         id: build
         uses: docker/build-push-action@v3
