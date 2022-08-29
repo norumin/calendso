@@ -39,3 +39,13 @@ output "db_instance_sg_ids" {
     aws_security_group.db.id,
   ]
 }
+
+output "ecr_repo_name" {
+  description = "Name of the ECR repo"
+  value       = aws_ecr_repository.app.name
+}
+
+output "ecr_repo_url" {
+  description = "URL to the ECR repo"
+  value       = aws_ecr_repository.app.repository_url
+}

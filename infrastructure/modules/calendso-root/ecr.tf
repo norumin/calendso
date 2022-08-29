@@ -1,4 +1,4 @@
-resource "aws_ecr_repository" "main" {
+resource "aws_ecr_repository" "app" {
   name                 = "ecrr-${local.slug}"
   image_tag_mutability = "MUTABLE"
 

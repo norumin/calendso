@@ -17,7 +17,7 @@ output "app_image_build_args" {
     POSTGRES_PASSWORD           = local.app_env_secrets.db_password
     POSTGRES_DB                 = local.app_env_secrets.db_name
     CALENDSO_REF                = var.calendso_ref
-    ECR_REPO_URL                = module.image.ecr_repo_url
+    ECR_REPO_URL                = module.root.ecr_repo_url
     NEXT_PUBLIC_LICENSE_CONSENT = "agree"
     NEXT_PUBLIC_WEBAPP_URL      = "https://${var.domain}"
     NEXT_PUBLIC_APP_URL         = "https://${var.domain}"

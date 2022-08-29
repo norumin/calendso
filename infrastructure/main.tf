@@ -9,12 +9,6 @@ terraform {
   }
 }
 
-module "image" {
-  source = "./modules/calendso-image"
-
-  stage = var.stage
-}
-
 module "root" {
   source = "./modules/calendso-root"
 
