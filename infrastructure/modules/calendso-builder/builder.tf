@@ -8,15 +8,22 @@ resource "null_resource" "docker_image_builder" {
   ]
 
   triggers = {
-    src_hash = filesha256("${path.module}/Dockerfile")
+    builder_src_hash = sha1(join("",
+      [for f in fileset("${path.module}/builder", "*") : filesha1("${path.module}/builder/${f}")]
+    ))
     variables = jsonencode([
-      //
+      data.aws_ecr_repository.app.repository_url,
+      var.stage,
+      var.build_env,
     ])
   }
 
   provisioner "local-exec" {
     command = <<BASH
-      docker-compose up -d database && docker-compose build app
+      docker-compose -f ${path.module}/builder/docker-compose.yml up -d database && \
+      docker-compose -f ${path.module}/builder/docker-compose.yml build app && \
+      docker-compose -f ${path.module}/builder/docker-compose.yml down && \
+      docker tag builder_app:latest ${data.aws_ecr_repository.app.repository_url}:latest
     BASH
 
     environment = merge({ STAGE = var.stage }, var.build_env)

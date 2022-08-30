@@ -88,6 +88,7 @@ module "provision" {
     module.data,
     module.log,
     module.end,
+    module.builder,
   ]
 
   stage                     = var.stage
