@@ -1,19 +1,17 @@
 # Builder
 FROM node:16 as builder
 
-WORKDIR /calendso
-
-ARG STAGE
+ARG STAGE=production
+ARG CALENDSO_REF=v1.9.2
 ARG NEXT_PUBLIC_LICENSE_CONSENT
 ARG NEXT_PUBLIC_WEBAPP_URL
 ARG NEXT_PUBLIC_APP_URL
 ARG DATABASE_URL
-ARG NEXTAUTH_SECRET=secret
-ARG CALENDSO_ENCRYPTION_KEY=secret
+ARG NEXTAUTH_SECRET
+ARG CALENDSO_ENCRYPTION_KEY
 ARG CALCOM_TELEMETRY_DISABLED
-ARG MAX_OLD_SPACE_SIZE=4096
 
-ENV NODE_OPTIONS=--max-old-space-size=4096 \
+ENV CALENDSO_REF=$CALENDSO_REF \
     NEXT_PUBLIC_LICENSE_CONSENT=$NEXT_PUBLIC_LICENSE_CONSENT \
     NEXT_PUBLIC_WEBAPP_URL=$NEXT_PUBLIC_WEBAPP_URL \
     NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL \
@@ -22,9 +20,21 @@ ENV NODE_OPTIONS=--max-old-space-size=4096 \
     CALENDSO_ENCRYPTION_KEY=$CALENDSO_ENCRYPTION_KEY \
     CALCOM_TELEMETRY_DISABLED=$CALCOM_TELEMETRY_DISABLED
 
-COPY calendso/package.json calendso/yarn.lock calendso/turbo.json ./
-COPY calendso/apps/web ./apps/web
-COPY calendso/packages ./packages
+ENV NODE_OPTIONS=--max-old-space-size=4096
+
+WORKDIR /var/calendso
+RUN git init && \
+    git remote add origin https://github.com/calcom/cal.com.git && \
+    git fetch origin $CALENDSO_REF && \
+    git reset --hard FETCH_HEAD
+
+WORKDIR /calendso
+RUN mkdir -p apps && mkdir -p packages && \
+    cp /var/calendso/package.json . && \
+    cp /var/calendso/yarn.lock . && \
+    cp /var/calendso/turbo.json . && \
+    cp -r /var/calendso/packages . && \
+    cp -r /var/calendso/apps/web ./apps/.
 
 RUN yarn config set network-timeout 1000000000 -g && \
     yarn install --frozen-lockfile
