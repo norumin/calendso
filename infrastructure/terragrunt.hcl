@@ -9,7 +9,7 @@ locals {
   app          = get_env("APP", "calendso")
   stage        = get_env("STAGE", "production")
   domain       = get_env("DOMAIN", "calendso.norumin.com")
-  calendso_ref = get_env("CALENDSO_REF", "v1.9.1")
+  calendso_ref = get_env("CALENDSO_REF", "v1.9.2")
 }
 
 generate "providers" {
