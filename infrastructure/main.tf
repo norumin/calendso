@@ -18,8 +18,8 @@ module "thirdparty" {
   source = "./modules/calendso-thirdparty"
 
   stage          = var.stage
-  gcp_org_id     = data.google_organization.norumin.org_id
-  gcp_project_id = "norumin-calendso"
+  gcp_org_id     = var.gcp_org_id
+  gcp_project_id = var.gcp_project_id
 }
 
 module "root" {

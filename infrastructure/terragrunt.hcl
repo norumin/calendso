@@ -1,6 +1,7 @@
 locals {
   aws_region        = get_env("AWS_REGION")
   gcp_region        = get_env("GCP_REGION")
+  gcp_org_id        = get_env("GCP_ORG_ID")
   gcp_project_id    = get_env("GCP_PROJECT_ID")
   repo_origin       = get_env("REPO_ORIGIN")
   backend_bucket    = get_env("BACKEND_BUCKET")
@@ -12,7 +13,6 @@ locals {
   stage                   = get_env("STAGE", "production")
   domain                  = get_env("DOMAIN", "calendso.norumin.com")
   app_instance_public_key = get_env("APP_INSTANCE_PUBLIC_KEY")
-
   calendso_ref            = get_env("CALENDSO_REF", "v1.9.1")
 }
 
@@ -61,6 +61,8 @@ inputs = {
   app                     = local.app
   stage                   = local.stage
   domain                  = local.domain
+  gcp_org_id              = local.gcp_org_id
+  gcp_project_id          = local.gcp_project_id
   app_instance_public_key = local.app_instance_public_key
   calendso_ref            = local.calendso_ref
 }

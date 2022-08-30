@@ -15,6 +15,7 @@ jobs:
     env:
       AWS_REGION: ${{ secrets.AWS_REGION }}
       GCP_REGION: ${{ secrets.AWS_REGION }}
+      GCP_ORG_ID: ${{ secrets.GCP_ORG_ID }}
       GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
       REPO_ORIGIN: ${{ github.repositoryUrl }}
       BACKEND_BUCKET: ${{ secrets.BACKEND_BUCKET }}
