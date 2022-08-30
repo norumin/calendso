@@ -84,6 +84,7 @@ variable "app_container_log_group" {
 variable "app_container_env_secrets" {
   description = "Secret environment variables for the app container"
   type = object({
+    app_instance_public_key = string
     db_username           = string
     db_password           = string
     db_name               = string
@@ -94,12 +95,7 @@ variable "app_container_env_secrets" {
     email_from            = string
     email_server_user     = string
     email_server_password = string
+    google_api_credentials = string
   })
   sensitive = true
-}
-
-variable "app_container_google_api_credentials" {
-  description = "Google API credentials for the app container"
-  type        = string
-  sensitive   = true
 }

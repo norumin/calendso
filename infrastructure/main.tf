@@ -6,20 +6,7 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 4.21"
     }
-
-    google = {
-      source  = "hashicorp/google"
-      version = "~> 4.33"
-    }
   }
-}
-
-module "thirdparty" {
-  source = "./modules/calendso-thirdparty"
-
-  stage          = var.stage
-  gcp_org_id     = var.gcp_org_id
-  gcp_project_id = var.gcp_project_id
 }
 
 module "root" {
@@ -37,7 +24,7 @@ module "app" {
   subnet_id     = module.root.public_subnet_ids[0]
   sg_ids        = module.root.app_instance_sg_ids
   instance_type = "t2.micro"
-  pubkey        = var.app_instance_public_key
+  pubkey        = local.app_env_secrets.app_instance_public_key
 }
 
 module "data" {
@@ -100,5 +87,4 @@ module "provision" {
   app_container_ports                  = "80:3000"
   app_container_log_group              = module.log.app_container_log_group
   app_container_env_secrets            = local.app_env_secrets
-  app_container_google_api_credentials = module.thirdparty.google_api_credentials
 }

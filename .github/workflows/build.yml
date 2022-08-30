@@ -14,9 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       AWS_REGION: ${{ secrets.AWS_REGION }}
-      GCP_REGION: ${{ secrets.AWS_REGION }}
-      GCP_ORG_ID: ${{ secrets.GCP_ORG_ID }}
-      GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
       REPO_ORIGIN: ${{ github.repositoryUrl }}
       BACKEND_BUCKET: ${{ secrets.BACKEND_BUCKET }}
       BACKEND_LOCKTABLE: ${{ secrets.BACKEND_LOCKTABLE }}
@@ -24,8 +21,7 @@ jobs:
       APP_NAME: Norumin Scheduling System
       APP: calendso
       STAGE: ${{ github.ref_name }}
-      DOMAIN: ${{ secrets.DOMAIN }}
-      APP_INSTANCE_PUBLIC_KEY: ${{ secrets.APP_INSTANCE_PUBLIC_KEY }}
+      DOMAIN: cal.norum.in
     services:
       database:
         image: postgres:13.6

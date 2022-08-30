@@ -46,7 +46,7 @@ locals {
     EMAIL_SERVER_USER              = var.app_container_env_secrets.email_server_user
     EMAIL_SERVER_PASSWORD          = var.app_container_env_secrets.email_server_password
     NEXT_PUBLIC_TEAM_IMPERSONATION = ""
-    GOOGLE_API_CREDENTIALS         = var.app_container_google_api_credentials
+    GOOGLE_API_CREDENTIALS         = var.app_container_env_secrets.google_api_credentials
     GOOGLE_LOGIN_ENABLED           = "true"
   }
 }

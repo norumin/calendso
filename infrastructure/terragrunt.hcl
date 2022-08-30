@@ -1,8 +1,5 @@
 locals {
   aws_region        = get_env("AWS_REGION")
-  gcp_region        = get_env("GCP_REGION")
-  gcp_org_id        = get_env("GCP_ORG_ID")
-  gcp_project_id    = get_env("GCP_PROJECT_ID")
   repo_origin       = get_env("REPO_ORIGIN")
   backend_bucket    = get_env("BACKEND_BUCKET")
   backend_locktable = get_env("BACKEND_LOCKTABLE")
@@ -12,7 +9,6 @@ locals {
   app                     = get_env("APP", "calendso")
   stage                   = get_env("STAGE", "production")
   domain                  = get_env("DOMAIN", "calendso.norumin.com")
-  app_instance_public_key = get_env("APP_INSTANCE_PUBLIC_KEY")
   calendso_ref            = get_env("CALENDSO_REF", "v1.9.1")
 }
 
@@ -29,13 +25,6 @@ generate "providers" {
           Repo = "${local.repo_origin}"
         }
       }
-    }
-
-    provider "google" {
-      region                = "${local.gcp_region}"
-      project               = "${local.gcp_project_id}"
-      billing_project       = "${local.gcp_project_id}"
-      user_project_override = true
     }
   EOF
 }
@@ -61,8 +50,5 @@ inputs = {
   app                     = local.app
   stage                   = local.stage
   domain                  = local.domain
-  gcp_org_id              = local.gcp_org_id
-  gcp_project_id          = local.gcp_project_id
-  app_instance_public_key = local.app_instance_public_key
   calendso_ref            = local.calendso_ref
 }

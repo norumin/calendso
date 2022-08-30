@@ -22,24 +22,6 @@ variable "domain" {
   default     = "calendso.norumin.com"
 }
 
-variable "gcp_org_id" {
-  description = "GCP organization id"
-  type        = string
-  sensitive   = true
-}
-
-variable "gcp_project_id" {
-  description = "GCP project id"
-  type        = string
-  sensitive   = true
-}
-
-variable "app_instance_public_key" {
-  description = "SSH public key for the app instance"
-  type        = string
-  sensitive   = true
-}
-
 variable "calendso_ref" {
   description = "Ref of calendso to deploy"
   type        = string
