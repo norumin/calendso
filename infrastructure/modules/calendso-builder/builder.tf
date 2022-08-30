@@ -26,6 +26,6 @@ resource "null_resource" "docker_image_builder" {
       docker tag builder_app:latest ${data.aws_ecr_repository.app.repository_url}:latest
     BASH
 
-    environment = merge({ STAGE = var.stage }, var.build_env)
+    environment = merge({ STAGE = var.stage, CALENDSO_REF = var.calendso_ref }, var.build_env)
   }
 }

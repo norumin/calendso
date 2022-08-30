@@ -22,6 +22,12 @@ variable "stage" {
   default     = "production"
 }
 
+variable "calendso_ref" {
+  description = "Ref of calendso to build"
+  type        = string
+  default     = "v1.9.2"
+}
+
 variable "ecr_repo_name" {
   description = "Name of the ECR repo"
   type        = string

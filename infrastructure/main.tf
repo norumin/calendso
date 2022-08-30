@@ -69,6 +69,7 @@ module "builder" {
   source = "./modules/calendso-builder"
 
   stage         = var.stage
+  calendso_ref  = "v1.9.2"
   ecr_repo_name = module.root.ecr_repo_name
   build_env = {
     NEXT_PUBLIC_LICENSE_CONSENT = "agree"

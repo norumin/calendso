@@ -21,9 +21,3 @@ variable "domain" {
   type        = string
   default     = "calendso.norumin.com"
 }
-
-variable "calendso_ref" {
-  description = "Ref of calendso to deploy"
-  type        = string
-  default     = "v1.9.2"
-}
