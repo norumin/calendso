@@ -85,17 +85,17 @@ variable "app_container_env_secrets" {
   description = "Secret environment variables for the app container"
   type = object({
     app_instance_public_key = string
-    db_username           = string
-    db_password           = string
-    db_name               = string
-    auth_secret           = string
-    cookie_domain         = string
-    cron_api_key          = string
-    encryption_key        = string
-    email_from            = string
-    email_server_user     = string
-    email_server_password = string
-    google_api_credentials = string
+    db_username             = string
+    db_password             = string
+    db_name                 = string
+    auth_secret             = string
+    cookie_domain           = string
+    cron_api_key            = string
+    encryption_key          = string
+    email_from              = string
+    email_server_user       = string
+    email_server_password   = string
+    google_api_credentials  = string
   })
   sensitive = true
 }

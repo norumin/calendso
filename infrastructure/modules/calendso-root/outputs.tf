@@ -33,6 +33,11 @@ output "app_instance_sg_ids" {
   ]
 }
 
+output "db_subnet_group_name" {
+  description = "Name of DB subnet group"
+  value       = aws_db_subnet_group.root.name
+}
+
 output "db_instance_sg_ids" {
   description = "Security group IDs to apply on db instance"
   value = [

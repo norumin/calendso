@@ -34,6 +34,16 @@ resource "aws_subnet" "private" {
   })
 }
 
+resource "aws_db_subnet_group" "root" {
+  name        = "dbsng-${local.slug}"
+  description = "DB subnet group inside the main VPC"
+  subnet_ids  = [for sn in aws_subnet.public : sn.id]
+
+  tags = merge(local.default_tags, {
+    Name = "dbsng-${local.slug}"
+  })
+}
+
 resource "aws_internet_gateway" "root" {
   vpc_id = aws_vpc.root.id
 

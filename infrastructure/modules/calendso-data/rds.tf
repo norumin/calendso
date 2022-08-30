@@ -9,7 +9,7 @@ resource "aws_db_instance" "db" {
   username                  = var.db_username
   password                  = var.db_password
   db_name                   = var.db_name
-  db_subnet_group_name      = aws_db_subnet_group.root.name
+  db_subnet_group_name      = var.db_subnet_group_name
   vpc_security_group_ids    = var.sg_ids
   publicly_accessible       = true
   final_snapshot_identifier = "dbsnap-${local.slug}-final"
@@ -18,16 +18,6 @@ resource "aws_db_instance" "db" {
 
   tags = merge(local.default_tags, {
     Name = "dbi-${local.slug}"
-  })
-}
-
-resource "aws_db_subnet_group" "root" {
-  name        = "dbsng-${local.slug}"
-  description = "DB subnet group inside the main VPC"
-  subnet_ids  = var.subnet_ids
-
-  tags = merge(local.default_tags, {
-    Name = "dbsng-${local.slug}"
   })
 }
 

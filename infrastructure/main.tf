@@ -31,11 +31,11 @@ module "data" {
   source = "./modules/calendso-data"
 
   stage                    = var.stage
-  subnet_ids               = module.root.public_subnet_ids
+  db_subnet_group_name     = module.root.db_subnet_group_name
   sg_ids                   = module.root.db_instance_sg_ids
   db_instance_class        = "db.t4g.micro"
   db_engine                = "postgres"
-  db_engine_version        = "13.6"
+  db_engine_version        = "14.2"
   db_allocated_storage     = 5
   db_max_allocated_storage = 18
   db_username              = local.app_env_secrets.db_username
@@ -75,16 +75,16 @@ module "provision" {
     module.end,
   ]
 
-  stage                                = var.stage
-  domain                               = var.domain
-  app_instance_public_ip               = module.app.instance_public_ip
-  app_keypair_path                     = "${path.root}/${local.keypair_filename}"
-  db_endpoint                          = module.data.db_endpoint
-  ecr_repo_name                        = module.root.ecr_repo_name
-  app_image_tag                        = "latest"
-  app_container_count                  = 1
-  app_container_name_prefix            = local.app_container_name_prefix
-  app_container_ports                  = "80:3000"
-  app_container_log_group              = module.log.app_container_log_group
-  app_container_env_secrets            = local.app_env_secrets
+  stage                     = var.stage
+  domain                    = var.domain
+  app_instance_public_ip    = module.app.instance_public_ip
+  app_keypair_path          = "${path.root}/${local.keypair_filename}"
+  db_endpoint               = module.data.db_endpoint
+  ecr_repo_name             = module.root.ecr_repo_name
+  app_image_tag             = "latest"
+  app_container_count       = 1
+  app_container_name_prefix = local.app_container_name_prefix
+  app_container_ports       = "80:3000"
+  app_container_log_group   = module.log.app_container_log_group
+  app_container_env_secrets = local.app_env_secrets
 }

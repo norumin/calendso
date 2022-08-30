@@ -22,9 +22,9 @@ variable "stage" {
   default     = "production"
 }
 
-variable "subnet_ids" {
-  description = "Subnet IDs of root VPC to place the DB instance"
-  type        = list(string)
+variable "db_subnet_group_name" {
+  description = "Name of DB subnet group"
+  type        = string
 }
 
 variable "sg_ids" {

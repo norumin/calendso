@@ -24,7 +24,7 @@ jobs:
       DOMAIN: cal.norum.in
     services:
       database:
-        image: postgres:13.6
+        image: postgres:14.2
         env:
           POSTGRES_PASSWORD: p@$$vv0rD
           POSTGRES_DB: builder
