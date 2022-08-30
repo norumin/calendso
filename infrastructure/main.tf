@@ -65,6 +65,21 @@ module "end" {
   app_lb_tg_port       = 80
 }
 
+module "builder" {
+  source = "./modules/calendso-builder"
+
+  stage         = var.stage
+  ecr_repo_name = module.root.ecr_repo_name
+  build_env = {
+    NEXT_PUBLIC_LICENSE_CONSENT = "agree"
+    NEXT_PUBLIC_WEBAPP_URL      = "https://${var.domain}"
+    NEXT_PUBLIC_APP_URL         = "https://${var.domain}"
+    NEXTAUTH_SECRET             = local.app_env_secrets.auth_secret
+    CALENDSO_ENCRYPTION_KEY     = local.app_env_secrets.encryption_key
+    CALCOM_TELEMETRY_DISABLED   = "1"
+  }
+}
+
 module "provision" {
   source = "./modules/calendso-provision"
   depends_on = [
@@ -81,10 +96,10 @@ module "provision" {
   app_keypair_path          = "${path.root}/${local.keypair_filename}"
   db_endpoint               = module.data.db_endpoint
   ecr_repo_name             = module.root.ecr_repo_name
-  app_image_tag             = "latest"
+  app_image_tag             = module.builder.app_image_tag
   app_container_count       = 1
   app_container_name_prefix = local.app_container_name_prefix
-  app_container_ports       = "80:3000"
+  app_container_ports       = "80:${module.builder.app_image_http_port}"
   app_container_log_group   = module.log.app_container_log_group
   app_container_env_secrets = local.app_env_secrets
 }
