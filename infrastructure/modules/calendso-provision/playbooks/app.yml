@@ -57,6 +57,7 @@
       community.docker.docker_image:
         name: "{{ image }}:{{ tag }}"
         source: pull
+        force_source: yes
     - name: Create containers
       community.docker.docker_container:
         name: "{{ container_name_prefix }}{{ item }}"
