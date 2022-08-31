@@ -14,12 +14,13 @@ resource "null_resource" "app_instance_provisioner" {
       var.app_instance_public_ip,
       var.app_keypair_path,
       local.app_image,
+      data.aws_ecr_image.app.image_digest,
       var.app_image_tag,
       var.app_container_count,
       var.app_container_name_prefix,
       var.app_container_ports,
       var.app_container_log_group,
-      data.aws_ecr_image.app.image_digest,
+      local.runtime_env,
     ])
   }
 

@@ -9,7 +9,7 @@ resource "null_resource" "docker_image_builder" {
 
   triggers = {
     builder_src_hash = sha1(join("",
-      [for f in fileset("${path.module}/builder", "*") : filesha1("${path.module}/builder/${f}")]
+      [for file in fileset("${path.module}/builder", "*") : filesha1("${path.module}/builder/${file}")]
     ))
     variables = jsonencode([
       local.ecr_url,
@@ -24,7 +24,7 @@ resource "null_resource" "docker_image_builder" {
       docker-compose -f ${path.module}/builder/docker-compose.yml up -d database && \
       docker-compose -f ${path.module}/builder/docker-compose.yml build app && \
       docker-compose -f ${path.module}/builder/docker-compose.yml down && \
-      echo "${local.ecr_token}" | docker login -u AWS --password-stdin ${local.ecr_url} && \
+      echo "${local.ecr_password}" | docker login -u ${local.ecr_user} --password-stdin ${local.ecr_url} && \
       docker tag builder_app:latest ${local.ecr_url}:latest && \
       docker push ${local.ecr_url}:latest && \
       docker logout ${local.ecr_url} && \

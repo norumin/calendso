@@ -42,6 +42,9 @@
         name: docker-ce
         state: latest
         update_cache: true
+    - name: Install docker module for python
+      pip:
+        name: docker
     - name: Prepare docker config directory
       file:
         path: ~/.docker
