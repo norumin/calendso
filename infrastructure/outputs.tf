@@ -9,6 +9,12 @@ output "app_lb_dns_name" {
   sensitive   = true
 }
 
+output "app_instance_public_ip" {
+  description = "Public IP of app instance"
+  value       = module.app.instance_public_ip
+  sensitive   = true
+}
+
 output "db_endpoint" {
   description = "Endpoint of the database"
   value       = module.data.db_endpoint
