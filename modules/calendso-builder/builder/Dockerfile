@@ -2,6 +2,7 @@
 FROM node:16 as builder
 
 ARG STAGE=production
+ARG CALENDSO_SRC=https://github.com/calcom/cal.com.git
 ARG CALENDSO_REF=v1.9.2
 ARG NEXT_PUBLIC_LICENSE_CONSENT
 ARG NEXT_PUBLIC_WEBAPP_URL
@@ -11,7 +12,8 @@ ARG NEXTAUTH_SECRET
 ARG CALENDSO_ENCRYPTION_KEY
 ARG CALCOM_TELEMETRY_DISABLED
 
-ENV CALENDSO_REF=$CALENDSO_REF \
+ENV CALENDSO_SRC=$CALENDSO_SRC \
+    CALENDSO_REF=$CALENDSO_REF \
     NEXT_PUBLIC_LICENSE_CONSENT=$NEXT_PUBLIC_LICENSE_CONSENT \
     NEXT_PUBLIC_WEBAPP_URL=$NEXT_PUBLIC_WEBAPP_URL \
     NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL \
@@ -24,7 +26,7 @@ ENV NODE_OPTIONS=--max-old-space-size=4096
 
 WORKDIR /var/calendso
 RUN git init && \
-    git remote add origin https://github.com/calcom/cal.com.git && \
+    git remote add origin $CALENDSO_SRC && \
     git fetch origin $CALENDSO_REF && \
     git reset --hard FETCH_HEAD
 
