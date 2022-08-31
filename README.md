@@ -29,7 +29,7 @@
 git clone git@github.com:norumin/calendso.git
 
 # cd into repo directory
-cd trilium
+cd calendso
 ```
 
 ### 2. Configure project
