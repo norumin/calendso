@@ -15,6 +15,11 @@ output "app_instance_public_ip" {
   sensitive   = true
 }
 
+output "app_image_digest" {
+  description = "Digest of the app docker image deployed"
+  value = module.provision.app_image_digest
+}
+
 output "db_endpoint" {
   description = "Endpoint of the database"
   value       = module.data.db_endpoint
