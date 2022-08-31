@@ -17,7 +17,7 @@ output "app_instance_public_ip" {
 
 output "app_image_digest" {
   description = "Digest of the app docker image deployed"
-  value = module.provision.app_image_digest
+  value       = module.provision.app_image_digest
 }
 
 output "db_endpoint" {

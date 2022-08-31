@@ -41,8 +41,8 @@ locals {
     TWILIO_MESSAGING_SID           = ""
     API_KEY_PREFIX                 = ""
     EMAIL_FROM                     = var.app_container_env_secrets.email_from
-    EMAIL_SERVER_HOST              = "smtp.gmail.com"
-    EMAIL_SERVER_PORT              = "465"
+    EMAIL_SERVER_HOST              = var.app_container_env_secrets.email_server_host
+    EMAIL_SERVER_PORT              = var.app_container_env_secrets.email_server_port
     EMAIL_SERVER_USER              = var.app_container_env_secrets.email_server_user
     EMAIL_SERVER_PASSWORD          = var.app_container_env_secrets.email_server_password
     NEXT_PUBLIC_TEAM_IMPERSONATION = ""

@@ -93,6 +93,8 @@ variable "app_container_env_secrets" {
     cron_api_key            = string
     encryption_key          = string
     email_from              = string
+    email_server_host       = string
+    email_server_port       = string
     email_server_user       = string
     email_server_password   = string
     google_api_credentials  = string
