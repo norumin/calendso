@@ -12,7 +12,7 @@ resource "null_resource" "docker_image_builder" {
       [for f in fileset("${path.module}/builder", "*") : filesha1("${path.module}/builder/${f}")]
     ))
     variables = jsonencode([
-      data.aws_ecr_repository.app.repository_url,
+      local.ecr_url,
       var.stage,
       var.calendso_ref,
       var.build_env,
@@ -24,11 +24,11 @@ resource "null_resource" "docker_image_builder" {
       docker-compose -f ${path.module}/builder/docker-compose.yml up -d database && \
       docker-compose -f ${path.module}/builder/docker-compose.yml build app && \
       docker-compose -f ${path.module}/builder/docker-compose.yml down && \
-      echo "${data.aws_ecr_authorization_token.app.authorization_token}" | docker login -u AWS --password-stdin ${data.aws_ecr_repository.app.repository_url} && \
-      docker tag builder_app:latest ${data.aws_ecr_repository.app.repository_url}:latest && \
-      docker push ${data.aws_ecr_repository.app.repository_url}:latest && \
-      docker logout ${data.aws_ecr_repository.app.repository_url} && \
-      docker rmi ${data.aws_ecr_repository.app.repository_url}:latest
+      echo "${local.ecr_token}" | docker login -u AWS --password-stdin ${local.ecr_url} && \
+      docker tag builder_app:latest ${local.ecr_url}:latest && \
+      docker push ${local.ecr_url}:latest && \
+      docker logout ${local.ecr_url} && \
+      docker rmi ${local.ecr_url}:latest
     BASH
 
     environment = merge({ STAGE = var.stage, CALENDSO_REF = var.calendso_ref }, var.build_env)
