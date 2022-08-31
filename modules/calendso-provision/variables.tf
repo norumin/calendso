@@ -98,6 +98,8 @@ variable "app_container_env_secrets" {
     email_server_user       = string
     email_server_password   = string
     google_api_credentials  = string
+    zoom_client_id          = string
+    zoom_client_secret      = string
   })
   sensitive = true
 }

@@ -94,6 +94,8 @@
           NEXT_PUBLIC_TEAM_IMPERSONATION: "{{ NEXT_PUBLIC_TEAM_IMPERSONATION | string }}"
           GOOGLE_API_CREDENTIALS: "{{ GOOGLE_API_CREDENTIALS | string }}"
           GOOGLE_LOGIN_ENABLED: "{{ GOOGLE_LOGIN_ENABLED | string }}"
+          ZOOM_CLIENT_ID: "{{ ZOOM_CLIENT_ID | string }}"
+          ZOOM_CLIENT_SECRET: "{{ ZOOM_CLIENT_SECRET | string }}"
         log_driver: awslogs
         log_options:
           awslogs-region: "{{ awslogs_region }}"

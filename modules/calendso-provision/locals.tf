@@ -48,5 +48,7 @@ locals {
     NEXT_PUBLIC_TEAM_IMPERSONATION = ""
     GOOGLE_API_CREDENTIALS         = var.app_container_env_secrets.google_api_credentials
     GOOGLE_LOGIN_ENABLED           = "true"
+    ZOOM_CLIENT_ID                 = var.app_container_env_secrets.zoom_client_id
+    ZOOM_CLIENT_SECRET             = var.app_container_env_secrets.zoom_client_secret
   }
 }
