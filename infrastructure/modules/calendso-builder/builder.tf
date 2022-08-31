@@ -14,6 +14,7 @@ resource "null_resource" "docker_image_builder" {
     variables = jsonencode([
       data.aws_ecr_repository.app.repository_url,
       var.stage,
+      var.calendso_ref,
       var.build_env,
     ])
   }

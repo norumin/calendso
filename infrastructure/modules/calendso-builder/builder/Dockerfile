@@ -44,8 +44,6 @@ RUN yarn build
 # Runner
 FROM node:16 as runner
 
-WORKDIR /calendso
-
 ARG STAGE
 
 ENV NODE_ENV=$STAGE
@@ -55,7 +53,9 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* && \
     npm install --global prisma
 
-COPY calendso/package.json calendso/yarn.lock calendso/turbo.json ./
+WORKDIR /calendso
+
+COPY --from=builder calendso/package.json calendso/yarn.lock calendso/turbo.json ./
 COPY --from=builder /calendso/node_modules ./node_modules
 COPY --from=builder /calendso/packages ./packages
 COPY --from=builder /calendso/apps/web ./apps/web
