@@ -54,5 +54,5 @@ graph.svg
 !.env.example
 
 # terragrunt generated files
-backend.tf
-providers.tf
+/backend.tf
+/providers.tf
