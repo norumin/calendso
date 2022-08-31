@@ -1,0 +1,67 @@
+name: Infrastructure
+
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+  schedule:
+    - cron: '0 12 * * *' # Everyday
+  workflow_dispatch:
+
+jobs:
+  drift:
+    strategy:
+      matrix:
+        stage: [production]
+    name: Drift detection
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      REPO_ORIGIN: ${{ github.repositoryUrl }}
+      BACKEND_BUCKET: ${{ secrets.BACKEND_BUCKET }}
+      BACKEND_LOCKTABLE: ${{ secrets.BACKEND_LOCKTABLE }}
+      BACKEND_REGION: ${{ secrets.BACKEND_REGION }}
+      APP_NAME: Norumin Scheduling System
+      APP: calendso
+      STAGE: ${{ matrix.stage }}
+      DOMAIN: cal.norum.in
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          mask-aws-account-id: false
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.2.8
+          terraform_wrapper: false
+      - name: Setup Terragrunt
+        uses: autero1/action-terragrunt@v1.1.0
+        with:
+          terragrunt_version: 0.38.7
+      - name: Validate project
+        run: terragrunt validate -no-color
+      - name: Check for infrastructure drift
+        run: terragrunt plan -detailed-exitcode -no-color
+      - name: Generate outputs
+        run: terragrunt output -json > output.json
+      - name: Generate terraform documents
+        uses: terraform-docs/gh-actions@v1.0.0
+        with:
+          working-dir: .
+          config-file: .terraform-docs.yml
+          output-file: docs/terraform.md
+          git-push: "true"
+          git-commit-message: "📝 terraform-docs: auto-update"
