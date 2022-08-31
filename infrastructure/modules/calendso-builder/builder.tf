@@ -24,7 +24,11 @@ resource "null_resource" "docker_image_builder" {
       docker-compose -f ${path.module}/builder/docker-compose.yml up -d database && \
       docker-compose -f ${path.module}/builder/docker-compose.yml build app && \
       docker-compose -f ${path.module}/builder/docker-compose.yml down && \
-      docker tag builder_app:latest ${data.aws_ecr_repository.app.repository_url}:latest
+      echo "${data.aws_ecr_authorization_token.app.authorization_token}" | docker login -u AWS --password-stdin ${data.aws_ecr_repository.app.repository_url} && \
+      docker tag builder_app:latest ${data.aws_ecr_repository.app.repository_url}:latest && \
+      docker push ${data.aws_ecr_repository.app.repository_url}:latest && \
+      docker logout ${data.aws_ecr_repository.app.repository_url} && \
+      docker rmi ${data.aws_ecr_repository.app.repository_url}:latest
     BASH
 
     environment = merge({ STAGE = var.stage, CALENDSO_REF = var.calendso_ref }, var.build_env)
