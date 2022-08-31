@@ -9,7 +9,7 @@ resource "null_resource" "docker_image_builder" {
 
   triggers = {
     builder_src_hash = sha1(join("",
-      [for file in fileset("${path.module}/builder", "*") : filesha1("${path.module}/builder/${file}")]
+      [for file in fileset("${path.module}/builder", "**") : filesha1("${path.module}/builder/${file}")]
     ))
     variables = jsonencode([
       local.ecr_url,
