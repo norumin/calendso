@@ -11,4 +11,55 @@
 [![Ansible](https://img.shields.io/badge/ansible-%231A1918.svg?style=for-the-badge&logo=ansible&logoColor=white)](https://ansible.com/)
 
 <!-- BEGIN_TF_DOCS -->
+## Requirements
+
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.2 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 4.21 |
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.28.0 |
+
+## Modules
+
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_app"></a> [app](#module\_app) | ./modules/calendso-app | n/a |
+| <a name="module_build"></a> [build](#module\_build) | ./modules/calendso-build | n/a |
+| <a name="module_data"></a> [data](#module\_data) | ./modules/calendso-data | n/a |
+| <a name="module_end"></a> [end](#module\_end) | ./modules/calendso-end | n/a |
+| <a name="module_log"></a> [log](#module\_log) | ./modules/calendso-log | n/a |
+| <a name="module_provision"></a> [provision](#module\_provision) | ./modules/calendso-provision | n/a |
+| <a name="module_root"></a> [root](#module\_root) | ./modules/calendso-root | n/a |
+
+## Resources
+
+| Name | Type |
+|------|------|
+| [aws_acm_certificate.apex](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/acm_certificate) | data source |
+| [aws_route53_zone.apex](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/route53_zone) | data source |
+| [aws_secretsmanager_secret_version.app_env](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/secretsmanager_secret_version) | data source |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_app"></a> [app](#input\_app) | URL friendly name of this app | `string` | `"calendso"` | no |
+| <a name="input_app_name"></a> [app\_name](#input\_app\_name) | Name of this app | `string` | `"Norumin Scheduling System"` | no |
+| <a name="input_domain"></a> [domain](#input\_domain) | Domain of this app | `string` | `"calendso.norumin.com"` | no |
+| <a name="input_stage"></a> [stage](#input\_stage) | Stage of deployment | `string` | `"production"` | no |
+
+## Outputs
+
+| Name | Description | Value | Sensitive |
+|------|-------------|-------|:---------:|
+| <a name="output_app_image_digest"></a> [app\_image\_digest](#output\_app\_image\_digest) | Digest of the app docker image deployed | `"sha256:cceaa09516701cc825a7413087fef5c14a8183ebaf42db8b0e85ff22a3c7c099"` | no |
+| <a name="output_app_instance_public_ip"></a> [app\_instance\_public\_ip](#output\_app\_instance\_public\_ip) | Public IP of app instance | `<sensitive>` | yes |
+| <a name="output_app_lb_dns_name"></a> [app\_lb\_dns\_name](#output\_app\_lb\_dns\_name) | Domain name of app load balancer | `<sensitive>` | yes |
+| <a name="output_app_url"></a> [app\_url](#output\_app\_url) | URL for this app | `"https://cal.norum.in"` | no |
+| <a name="output_db_endpoint"></a> [db\_endpoint](#output\_db\_endpoint) | Endpoint of the database | `<sensitive>` | yes |
 <!-- END_TF_DOCS -->
