@@ -57,8 +57,7 @@ Contributions are welcome by opening issues and pull requests. See [CONTRIBUTING
 
 ## 🚧 Roadmap
 
-- [ ] Use a dedicated docker context inside builder module
-- [ ] Rename `builder` module to `build`
+- [ ] Use a dedicated docker context inside build module
 - [ ] DB instance inside private subnet
 - [ ] Prisma studio exposed by nginx
 - [ ] Backup strategies

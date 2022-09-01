@@ -65,8 +65,8 @@ module "end" {
   app_lb_tg_port       = 80
 }
 
-module "builder" {
-  source = "./modules/calendso-builder"
+module "build" {
+  source = "./modules/calendso-build"
 
   stage         = var.stage
   calendso_ref  = "v1.9.2"
@@ -89,7 +89,7 @@ module "provision" {
     module.data,
     module.log,
     module.end,
-    module.builder,
+    module.build,
   ]
 
   stage                     = var.stage
@@ -98,10 +98,10 @@ module "provision" {
   app_keypair_path          = "${path.root}/${local.keypair_filename}"
   db_endpoint               = module.data.db_endpoint
   ecr_repo_name             = module.root.ecr_repo_name
-  app_image_tag             = module.builder.app_image_tag
+  app_image_tag             = module.build.app_image_tag
   app_container_count       = 1
   app_container_name_prefix = local.app_container_name_prefix
-  app_container_ports       = "80:${module.builder.app_image_http_port}"
+  app_container_ports       = "80:${module.build.app_image_http_port}"
   app_container_log_group   = module.log.app_container_log_group
   app_container_env_secrets = local.app_env_secrets
 }
